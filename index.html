@@ -216,7 +216,7 @@
       <!-- Concours direct -->
       <article class="card" tabindex="0" role="button" aria-pressed="false" aria-label="Concours direct" data-url="direct.html">
         <h3>Concours Direct</h3>
-        <p>Formation spécialisée pour les concours administratifs, universitaires, et autres concours d’entrée directe. Accédez à tous les modules et entraînements personnalisés.</p>
+        <p>Formation spécialisée pour les concours administratifs, universitaires, et autres concours d'entrée directe. Accédez à tous les modules et entraînements personnalisés.</p>
         <button type="button" data-url="direct.html">Découvrir</button>
       </article>
 
@@ -270,8 +270,10 @@
       const card = event.currentTarget;
       rippleEffect(event);
 
+      // Récupérer l'URL à partir de l'élément cliqué ou de la carte parente
+      const url = event.target.getAttribute('data-url') || card.getAttribute('data-url');
+      
       // Redirection après un court délai pour laisser l'animation se jouer
-      const url = event.target.dataset.url || card.dataset.url;
       setTimeout(() => {
         window.location.href = url;
       }, 350); // 350ms délai (moins que la durée animation ripple 600ms pour fluidité)
@@ -290,4 +292,4 @@
     });
   </script>
 </body>
-    </html>
+</html>
