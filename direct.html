@@ -126,7 +126,7 @@
     border-color: var(--color-primary-hover);
   }
 
-  input[type="radio"] {
+  input[type="checkbox"], input[type="radio"] {
     margin-right: 12px;
     cursor: pointer;
     vertical-align: middle;
@@ -226,17 +226,17 @@
     line-height: 1.4;
   }
   #ads-remove-section button {
-    background: var(--color-success);
+    background: var(--color-primary);
     color: white;
     padding: 12px 26px;
     font-size: 1rem;
-    box-shadow: 0 6px 18px rgba(39, 174, 96, 0.45);
+    box-shadow: 0 6px 18px rgba(51, 102, 255, 0.45);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     min-width: 200px;
   }
   #ads-remove-section button:hover {
-    background: #21a463;
-    box-shadow: 0 8px 22px rgba(33, 164, 99, 0.7);
+    background: var(--color-primary-hover);
+    box-shadow: 0 8px 22px rgba(51, 102, 255, 0.7);
   }
 
   /* Promo niveau 2 page spéciale */
@@ -290,7 +290,6 @@
   }
 
   /* Modal */
-
   #modal {
     position: fixed;
     top:0; left:0; right:0; bottom:0;
@@ -352,27 +351,35 @@
     user-select:none;
     transition: background-color 0.25s ease;
     letter-spacing: 0.03em;
+    color: var(--color-white) !important;
+    background: var(--color-primary) !important;
   }
 
   #modal .btn-confirm {
-    background: var(--color-primary);
-    color: var(--color-white);
     box-shadow: 0 6px 18px var(--shadow-light);
   }
 
   #modal .btn-confirm:hover {
-    background: var(--color-primary-hover);
+    background: var(--color-primary-hover) !important;
     box-shadow: 0 8px 24px var(--shadow-hover);
   }
 
   #modal .btn-cancel {
-    background: var(--color-error);
-    color: var(--color-white);
+    background: #dc3545 !important;
     box-shadow: 0 6px 18px rgba(231, 76, 60, 0.44);
   }
 
   #modal .btn-cancel:hover {
     filter: brightness(1.1);
+  }
+
+  /* Score message */
+  .score-message {
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+    font-weight: bold;
+    color: var(--color-primary);
   }
 </style>
 </head>
@@ -400,8 +407,7 @@
 
   <div id="ads-remove-section" style="display:none;">
     <p><strong>Voulez-vous supprimer les publicités ?</strong></p>
-    <p>Profitez d'une expérience sans interruption et sans pubs en souscrivant à notre abonnement premium.</p>
-    <button id="remove-ads-btn" type="button" aria-label="Supprimer les publicités">Oui, je veux supprimer les pubs</button>
+    <button id="remove-ads-btn" type="button" aria-label="Supprimer les publicités">Oui</button>
   </div>
 
   <div id="level2-promo" style="display:none;" tabindex="0">
@@ -421,6 +427,7 @@
     </ul>
     <p class="whatsapp-num" aria-label="Numéro WhatsApp pour contact"><strong>WhatsApp : +226 63 48 12 80</strong></p>
     <button id="contact-whatsapp-btn" type="button" aria-label="Contacter sur WhatsApp">Contacter sur WhatsApp</button>
+    <button id="back-btn" type="button" style="margin-top: 10px; background: #dc3545;">Retour</button>
   </div>
 </div>
 
@@ -438,16 +445,18 @@
   const QUESTIONS_PER_PAGE = 10;
   const PASS_MARK = 40;
 
+  // Modifier la structure des questions pour permettre plusieurs bonnes réponses
   const questions = Array.from({length: TOTAL_QUESTIONS}, (_, i) => ({
     id: i + 1,
-    text: `Question ${i + 1} : Quelle est la bonne réponse ?`,
+    text: `Question ${i + 1} : Quelles sont les bonnes réponses ?`,
     options: [
       "Option A",
       "Option B",
       "Option C",
       "Option D"
     ],
-    correctIndex: i % 4
+    // Maintenant on peut avoir plusieurs bonnes réponses
+    correctIndices: [i % 4, (i + 1) % 4].filter((v, i, a) => a.indexOf(v) === i) // Exemple: 2 bonnes réponses par question
   }));
 
   let currentPage = 1;
@@ -467,6 +476,7 @@
   const removeAdsBtn = document.getElementById("remove-ads-btn");
   const level2Promo = document.getElementById("level2-promo");
   const contactWhatsappBtn = document.getElementById("contact-whatsapp-btn");
+  const backBtn = document.getElementById("back-btn");
 
   const WHATSAPP_NUMBER_DISPLAY = "+226 63 48 12 80";
   const WHATSAPP_LINK = `https://wa.me/22663481280?text=${encodeURIComponent("Bonjour, je souhaite souscrire à l'abonnement pour supprimer les publicités et accéder au Niveau 2.")}`;
@@ -511,13 +521,17 @@
     currentPage = page;
     const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
 
+    // Supprimer l'ancien message de score s'il existe
+    const oldScoreMessage = document.querySelector(".score-message");
+    if(oldScoreMessage) oldScoreMessage.remove();
+
     // On ne peut accéder à la page promo que si toutes les pages ont été totalement répondues
     if(page === totalPages + 1) {
       if(!allPagesAnswered()) {
         showMessageModal({
           type: "alert",
           title: "Attention",
-          message: "Vous devez compléter toutes les pages avant d’accéder à la page de fin du niveau 1."
+          message: "Vous devez compléter toutes les pages avant d'accéder à la page de fin du niveau 1."
         });
         // Retour page 1 ou page courante
         showPage(1);
@@ -531,6 +545,11 @@
       correctionBtn.disabled = true;
       adsRemoveSection.style.display = "none";
       level2Promo.style.display = "block";
+      
+      // Mettre à jour le message avec le score obtenu
+      const { totalScore } = calculateScores();
+      document.querySelector("#level2-promo p").innerHTML = 
+        `Votre score: ${totalScore}/${TOTAL_QUESTIONS}. Pour débloquer le <strong>Niveau 2</strong>, vous devez avoir ${PASS_MARK}/60. Effectuez un paiement unique de <strong>500 francs CFA</strong> via WhatsApp.`;
       return;
     }
 
@@ -559,11 +578,11 @@
       q.options.forEach((option, idx) => {
         const label = document.createElement("label");
         const input = document.createElement("input");
-        input.type = "radio";
+        input.type = "checkbox"; // Changé de radio à checkbox
         input.name = `q${q.id}`;
         input.value = idx;
         input.disabled = correctionsDone[currentPage - 1];
-        if(userAnswer === idx) input.checked = true;
+        if(userAnswer && userAnswer.includes(idx)) input.checked = true;
 
         label.appendChild(input);
         label.appendChild(document.createTextNode(option));
@@ -573,19 +592,34 @@
       // Coloration réponse après correction
       if(correctionsDone[currentPage - 1]) {
         const labels = questionDiv.querySelectorAll("label");
+        const userAnswer = userAnswers[i] || [];
+        const isCorrect = checkAnswerCorrectness(i, userAnswer);
+
         labels.forEach((label, idx) => {
-          if(idx === q.correctIndex) {
+          const input = label.querySelector("input");
+          
+          if(q.correctIndices.includes(idx)) {
+            // Bonne réponse
             label.style.backgroundColor = "var(--color-success-bg)";
             label.style.border = `3px solid var(--color-success-border)`;
-            label.style.color = "#155724"; // texte vert foncé
-            if(userAnswer === idx) questionDiv.classList.add("correct");
-          } else if(userAnswer === idx) {
+            label.style.color = "#155724";
+          } else if(userAnswer.includes(idx)) {
+            // Mauvaise réponse sélectionnée
             label.style.backgroundColor = "var(--color-error-bg)";
             label.style.border = `3px solid var(--color-error-border)`;
-            label.style.color = "#721c24"; // texte rouge foncé
-            questionDiv.classList.add("incorrect");
+            label.style.color = "#721c24";
           }
+
+          // Désactiver toutes les cases après correction
+          input.disabled = true;
         });
+
+        // Marquer toute la question comme correcte ou incorrecte
+        if(isCorrect) {
+          questionDiv.classList.add("correct");
+        } else {
+          questionDiv.classList.add("incorrect");
+        }
       }
 
       questionsContainer.appendChild(questionDiv);
@@ -594,8 +628,28 @@
     // Section suppression pubs (>1ère page)
     adsRemoveSection.style.display = (page >= 2) ? "block" : "none";
 
+    // Ajouter le message de score requis
+    const scoreMessage = document.createElement("div");
+    scoreMessage.className = "score-message";
+    const { totalScore } = calculateScores();
+    scoreMessage.textContent = `Score actuel: ${totalScore}/${TOTAL_QUESTIONS} - Vous devez avoir ${PASS_MARK}/60 pour débloquer le niveau 2`;
+    paginationContainer.parentNode.insertBefore(scoreMessage, paginationContainer.nextSibling);
+
     updatePagination();
     updateButtons();
+  }
+
+  // Vérifie si la réponse à une question est correcte
+  function checkAnswerCorrectness(questionIndex, userAnswer) {
+    if(!userAnswer) return false;
+    
+    const q = questions[questionIndex];
+    // Vérifier que toutes les bonnes réponses sont sélectionnées
+    const allCorrectSelected = q.correctIndices.every(idx => userAnswer.includes(idx));
+    // Vérifier qu'aucune mauvaise réponse n'est sélectionnée
+    const noIncorrectSelected = userAnswer.every(idx => q.correctIndices.includes(idx));
+    
+    return allCorrectSelected && noIncorrectSelected;
   }
 
   // Vérifie si TOUTES les pages sont complètes (réponses données)
@@ -653,11 +707,8 @@
     const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
     for(let i = startIndex; i < endIndex; i++) {
       const qid = questions[i].id;
-      const radios = document.getElementsByName(`q${qid}`);
-      userAnswers[i] = null;
-      radios.forEach(radio => {
-        if(radio.checked) userAnswers[i] = Number(radio.value);
-      });
+      const checkboxes = document.querySelectorAll(`input[name="q${qid}"]:checked`);
+      userAnswers[i] = Array.from(checkboxes).map(cb => Number(cb.value));
     }
   }
 
@@ -666,7 +717,7 @@
     const startIndex = (page - 1) * QUESTIONS_PER_PAGE;
     const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
     for(let i = startIndex ; i < endIndex; i++) {
-      if(userAnswers[i] === null) return false;
+      if(userAnswers[i] === null || userAnswers[i].length === 0) return false;
     }
     return true;
   }
@@ -678,7 +729,7 @@
     const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
     const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
     for(let i = 0 ; i < TOTAL_QUESTIONS; i++) {
-      if(userAnswers[i] === questions[i].correctIndex) {
+      if(userAnswers[i] && checkAnswerCorrectness(i, userAnswers[i])) {
         totalScore++;
         if(i >= startIndex && i < endIndex) pageScore++;
       }
@@ -700,30 +751,25 @@
     showPage(currentPage);
 
     const { pageScore, totalScore } = calculateScores();
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+
+    let message = `Vous avez obtenu ${pageScore} / ${QUESTIONS_PER_PAGE} sur cette page.`;
+    if(currentPage === totalPages) {
+      message += `\nScore total: ${totalScore}/${TOTAL_QUESTIONS}.`;
+      if(totalScore >= PASS_MARK) {
+        message += "\nBravo ! Vous pouvez passer au Niveau 2.";
+      } else {
+        message += `\nVous devez obtenir ${PASS_MARK} pour débloquer le niveau 2.`;
+      }
+    }
 
     showMessageModal({
       type: "alert",
       title: "Correction",
-      message: `Vous avez obtenu ${pageScore} / ${QUESTIONS_PER_PAGE} sur cette page.`,
+      message: message,
       onConfirm: () => {
-        const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
         if(currentPage === totalPages) {
-          if(totalScore >= PASS_MARK) {
-            showMessageModal({
-              type: "alert",
-              title: "Félicitations!",
-              message: `Bravo ! Vous avez ${totalScore} bonnes réponses sur ${TOTAL_QUESTIONS}.\nVous pouvez passer au Niveau 2.`,
-              onConfirm: () => {
-                showPage(totalPages + 1);
-              }
-            });
-          } else {
-            showMessageModal({
-              type: "alert",
-              title: "À refaire",
-              message: `Vous avez ${totalScore} bonnes réponses sur ${TOTAL_QUESTIONS}.\nVous devez reprendre le Niveau 1.`,
-            });
-          }
+          showPage(totalPages + 1); // Toujours permettre d'accéder à la page de fin
         }
       }
     });
@@ -772,12 +818,21 @@
   removeAdsBtn.addEventListener("click", () => {
     showMessageModal({
       type: "confirm",
-      title: "Supprimer les publicités",
-      message: `Souhaitez-vous contacter notre support WhatsApp (${WHATSAPP_NUMBER_DISPLAY}) pour souscrire et supprimer les publicités ?`,
-      confirmText: "Contacter",
-      cancelText: "Annuler",
+      title: "Supprimer les publicités ?",
+      message: "Voulez-vous supprimer les publicités ?",
+      confirmText: "Oui",
+      cancelText: "Non",
       onConfirm: () => {
-        window.open(WHATSAPP_LINK, "_blank");
+        // Après avoir cliqué sur Oui, montrer les détails
+        showMessageModal({
+          type: "alert",
+          title: "Détails de paiement",
+          message: `Pour supprimer les publicités, vous devez effectuer un paiement de 500 francs CFA.\n\nContactez notre support WhatsApp (${WHATSAPP_NUMBER_DISPLAY}) pour compléter la transaction.`,
+          confirmText: "Continuer sur WhatsApp",
+          onConfirm: () => {
+            window.open(WHATSAPP_LINK, "_blank");
+          }
+        });
       }
     });
   });
@@ -786,10 +841,15 @@
   contactWhatsappBtn.addEventListener("click", () => {
     window.open(WHATSAPP_LINK, "_blank");
   });
+pppppppp
+  // Bouton retour
+  backBtn.addEventListener("click", () => {
+    showPage(currentPage - 1);
+  });
 
   // Init
   showPage(1);
 </script>
 
 </body>
-</html>
+</html>j
