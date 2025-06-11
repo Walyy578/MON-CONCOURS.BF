@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz - Niveau 1 - Online Banking</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+  :root {
+    --color-bg-start: #f0f4ff;
+    --color-bg-end: #d9e4ff;
+    --color-primary: #3366FF;
+    --color-primary-hover: #4D8CFF;
+    --color-text-base: #222222;
+    --color-text-muted: #555555;
+    --color-success-bg: #d4edda;
+    --color-success-border: #28a745;
+    --color-error-bg: #f8d7da;
+    --color-error-border: #dc3545;
+    --color-white: #FFFFFF;
+    --color-card-bg: #FFFFFF;
+    --shadow-light: rgba(0, 102, 255, 0.2);
+    --shadow-hover: rgba(51, 102, 255, 0.4);
+  }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
+    color: var(--color-text-base);
+    padding: 20px;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  header {
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  header img {
+    width: 120px;
+    filter: drop-shadow(0 4px 8px var(--shadow-light));
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+  }
+  header img:hover {
+    transform: scale(1.05);
+  }
+  h1 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: var(--color-primary);
+  }
+
+  .container {
+    background: var(--color-card-bg);
+    border-radius: 18px;
+    padding: 30px 40px;
+    max-width: 720px;
+    width: 100%;
+    box-shadow: 0 8px 24px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .questions {
+    flex-grow: 1;
+    margin-bottom: 20px;
+  }
+
+  .question {
+    background: #f8fbff;
+    border-radius: 12px;
+    padding: 18px 25px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(51, 102, 255, 0.08);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+    user-select:none;
+  }
+
+  /* Correct Answer Style */
+  .question.correct {
+    background-color: var(--color-success-bg);
+    border: 3px solid var(--color-success-border);
+    box-shadow: none;
+  }
+
+  /* Incorrect Answer Style */
+  .question.incorrect {
+    background-color: var(--color-error-bg);
+    border: 3px solid var(--color-error-border);
+    box-shadow: none;
+  }
+
+  .question h3 {
+    margin: 0 0 10px 0;
+    font-weight: 600;
+    color: var(--color-primary);
+    font-size: 1.1rem;
+  }
+
+  label {
+    user-select:none;
+    display: block;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.3s ease;
+    border: 1.8px solid transparent;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-text-base);
+  }
+
+  label:hover {
+    background-color: var(--color-primary-hover);
+    color: var(--color-white);
+    box-shadow: 0 5px 15px var(--shadow-hover);
+    border-color: var(--color-primary-hover);
+  }
+
+  input[type="radio"] {
+    margin-right: 12px;
+    cursor: pointer;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    padding: 10px 18px;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 14px;
+    color: var(--color-white);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 45px;
+    user-select:none;
+    box-shadow: 0 5px 15px var(--shadow-light);
+  }
+
+  .page-btn:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    box-shadow: 0 6px 20px var(--shadow-hover);
+  }
+
+  .page-btn[disabled] {
+    background: #a4b0d4;
+    cursor: default;
+    opacity: 0.55;
+    box-shadow: none;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  button {
+    border-radius: 16px;
+    border: none;
+    font-weight: 700;
+    font-size: 1.07rem;
+    cursor: pointer;
+    color: var(--color-white);
+    background: var(--color-primary);
+    padding: 14px 30px;
+    box-shadow: 0 8px 20px var(--shadow-light);
+    user-select:none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    min-width: 120px;
+    white-space: nowrap;
+  }
+
+  button:disabled {
+    background: #a4b0d4;
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+  }
+
+  button:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    box-shadow: 0 10px 30px var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  button:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: 0 5px 15px var(--shadow-light);
+  }
+
+  /* Section suppression pubs après contrôles et pagination */
+  #ads-remove-section {
+    background-color: #ebf8f7;
+    border-radius: 16px;
+    padding: 20px 25px;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(26, 188, 156, 0.25);
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    user-select:none;
+  }
+  #ads-remove-section p {
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+  #ads-remove-section button {
+    background: var(--color-success);
+    color: white;
+    padding: 12px 26px;
+    font-size: 1rem;
+    box-shadow: 0 6px 18px rgba(39, 174, 96, 0.45);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 200px;
+  }
+  #ads-remove-section button:hover {
+    background: #21a463;
+    box-shadow: 0 8px 22px rgba(33, 164, 99, 0.7);
+  }
+
+  /* Promo niveau 2 page spéciale */
+  #level2-promo {
+    background: #fff6e6;
+    border-radius: 20px;
+    padding: 28px 30px;
+    box-shadow: 0 0 28px rgb(255 193 7 / 0.4);
+    color: #7a4d00;
+    font-weight: 600;
+    font-size: 1.15rem;
+    line-height: 1.4;
+    user-select:none;
+  }
+  #level2-promo h2 {
+    color: #c67900;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+  #level2-promo p, #level2-promo ul {
+    margin-bottom: 16px;
+  }
+  #level2-promo ul {
+    padding-left: 20px;
+  }
+  #level2-promo ul li {
+    margin-bottom: 8px;
+  }
+  #level2-promo .whatsapp-num {
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    color: var(--color-primary);
+  }
+  #level2-promo button {
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: 14px 30px;
+    font-weight: 700;
+    font-size: 1.15rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px var(--shadow-light);
+    transition: background-color 0.3s ease;
+    width: 100%;
+    white-space: nowrap;
+  }
+  #level2-promo button:hover {
+    background: var(--color-primary-hover);
+  }
+
+  /* Modal */
+
+  #modal {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(51, 102, 255, 0.74);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1500;
+    backdrop-filter: blur(3px);
+  }
+
+  #modal.active {
+    display: flex;
+  }
+
+  #modal .content {
+    background: var(--color-white);
+    color: var(--color-primary);
+    padding: 32px 28px;
+    border-radius: 20px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 0 40px var(--color-primary);
+    text-align: center;
+    user-select:none;
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  #modal .title {
+    font-size: 1.75rem;
+    margin-bottom: 18px;
+    font-weight: 700;
+    color: var(--color-primary);
+    user-select:none;
+  }
+
+  #modal .message {
+    white-space: pre-wrap;
+    margin-bottom: 30px;
+    color: var(--color-text-base);
+    font-weight: 500;
+  }
+
+  #modal .btns {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  #modal button {
+    width: 140px;
+    padding: 14px 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 18px;
+    border: none;
+    cursor: pointer;
+    user-select:none;
+    transition: background-color 0.25s ease;
+    letter-spacing: 0.03em;
+  }
+
+  #modal .btn-confirm {
+    background: var(--color-primary);
+    color: var(--color-white);
+    box-shadow: 0 6px 18px var(--shadow-light);
+  }
+
+  #modal .btn-confirm:hover {
+    background: var(--color-primary-hover);
+    box-shadow: 0 8px 24px var(--shadow-hover);
+  }
+
+  #modal .btn-cancel {
+    background: var(--color-error);
+    color: var(--color-white);
+    box-shadow: 0 6px 18px rgba(231, 76, 60, 0.44);
+  }
+
+  #modal .btn-cancel:hover {
+    filter: brightness(1.1);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://raw.githubusercontent.com/Walyy578/ONLINE-BANKING/main/Design%20sans%20titre%20(2).png" alt="Logo Online Banking" loading="lazy" />
+  <h1>Quiz - Niveau 1</h1>
+</header>
+
+<div class="container" role="main">  
+  <div class="questions" id="questions-container" aria-live="polite" tabindex="0">
+    <!-- Questions injectées ici -->
+  </div>
+
+  <div class="controls" style="margin-bottom:8px;">
+    <button id="prev-btn" type="button">Précédent</button>
+    <button id="correction-btn" type="button">Correction</button>
+    <button id="next-btn" type="button">Suivant</button>
+  </div>
+
+  <div class="pagination" id="pagination" style="margin-bottom:20px;">
+    <!-- Boutons de pages -->
+  </div>
+
+  <div id="ads-remove-section" style="display:none;">
+    <p><strong>Voulez-vous supprimer les publicités ?</strong></p>
+    <p>Profitez d'une expérience sans interruption et sans pubs en souscrivant à notre abonnement premium.</p>
+    <button id="remove-ads-btn" type="button" aria-label="Supprimer les publicités">Oui, je veux supprimer les pubs</button>
+  </div>
+
+  <div id="level2-promo" style="display:none;" tabindex="0">
+    <h2>Accédez au Niveau 2 et plus encore !</h2>
+    <p>
+      Pour débloquer le <strong>Niveau 2</strong> et continuer votre progression,
+      vous devez effectuer un paiement unique de <strong>500 francs CFA</strong> via WhatsApp.
+    </p>
+    <p>
+      Ce paiement vous donne accès à :
+    </p>
+    <ul>
+      <li>Suppression complète des publicités pour toutes les sessions</li>
+      <li>Accès à des questions exclusives et de niveaux avancés</li>
+      <li>Support prioritaire et mises à jour régulières</li>
+      <li>Et bien plus encore !</li>
+    </ul>
+    <p class="whatsapp-num" aria-label="Numéro WhatsApp pour contact"><strong>WhatsApp : +226 63 48 12 80</strong></p>
+    <button id="contact-whatsapp-btn" type="button" aria-label="Contacter sur WhatsApp">Contacter sur WhatsApp</button>
+  </div>
+</div>
+
+<!-- Modal général -->
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+  <div class="content">
+    <div class="title" id="modal-title"></div>
+    <div class="message" id="modal-desc"></div>
+    <div class="btns" id="modal-buttons"></div>
+  </div>
+</div>
+
+<script>
+  const TOTAL_QUESTIONS = 60;
+  const QUESTIONS_PER_PAGE = 10;
+  const PASS_MARK = 40;
+
+  const questions = Array.from({length: TOTAL_QUESTIONS}, (_, i) => ({
+    id: i + 1,
+    text: `Question ${i + 1} : Quelle est la bonne réponse ?`,
+    options: [
+      "Option A",
+      "Option B",
+      "Option C",
+      "Option D"
+    ],
+    correctIndex: i % 4
+  }));
+
+  let currentPage = 1;
+  let userAnswers = Array(TOTAL_QUESTIONS).fill(null);
+  let correctionsDone = Array(Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE)).fill(false);
+
+  const questionsContainer = document.getElementById("questions-container");
+  const paginationContainer = document.getElementById("pagination");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+  const correctionBtn = document.getElementById("correction-btn");
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modal-title");
+  const modalDesc = document.getElementById("modal-desc");
+  const modalButtons = document.getElementById("modal-buttons");
+  const adsRemoveSection = document.getElementById("ads-remove-section");
+  const removeAdsBtn = document.getElementById("remove-ads-btn");
+  const level2Promo = document.getElementById("level2-promo");
+  const contactWhatsappBtn = document.getElementById("contact-whatsapp-btn");
+
+  const WHATSAPP_NUMBER_DISPLAY = "+226 63 48 12 80";
+  const WHATSAPP_LINK = `https://wa.me/22663481280?text=${encodeURIComponent("Bonjour, je souhaite souscrire à l'abonnement pour supprimer les publicités et accéder au Niveau 2.")}`;
+
+  // Modal affichage
+  function showMessageModal(options) {
+    modalTitle.textContent = options.title || "Message";
+    modalDesc.textContent = options.message || "";
+    modalButtons.innerHTML = "";
+    if(options.type === "alert") {
+      const btnOk = document.createElement("button");
+      btnOk.textContent = options.confirmText || "OK";
+      btnOk.className = "btn-confirm";
+      btnOk.addEventListener("click", () => {
+        modal.classList.remove("active");
+        if(options.onConfirm) options.onConfirm();
+      });
+      modalButtons.appendChild(btnOk);
+    } else if(options.type === "confirm") {
+      const btnConfirm = document.createElement("button");
+      btnConfirm.textContent = options.confirmText || "Confirmer";
+      btnConfirm.className = "btn-confirm";
+      btnConfirm.addEventListener("click", () => {
+        modal.classList.remove("active");
+        if(options.onConfirm) options.onConfirm();
+      });
+      const btnCancel = document.createElement("button");
+      btnCancel.textContent = options.cancelText || "Annuler";
+      btnCancel.className = "btn-cancel";
+      btnCancel.addEventListener("click", () => {
+        modal.classList.remove("active");
+        if(options.onCancel) options.onCancel();
+      });
+      modalButtons.appendChild(btnConfirm);
+      modalButtons.appendChild(btnCancel);
+    }
+    modal.classList.add("active");
+  }
+
+  // Afficher la page quiz / promo
+  function showPage(page) {
+    currentPage = page;
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+
+    // On ne peut accéder à la page promo que si toutes les pages ont été totalement répondues
+    if(page === totalPages + 1) {
+      if(!allPagesAnswered()) {
+        showMessageModal({
+          type: "alert",
+          title: "Attention",
+          message: "Vous devez compléter toutes les pages avant d’accéder à la page de fin du niveau 1."
+        });
+        // Retour page 1 ou page courante
+        showPage(1);
+        return;
+      }
+      // Affichage page promo spéciale
+      questionsContainer.style.display = "none";
+      paginationContainer.style.display = "none";
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      correctionBtn.disabled = true;
+      adsRemoveSection.style.display = "none";
+      level2Promo.style.display = "block";
+      return;
+    }
+
+    // Affichage page normale quiz
+    questionsContainer.style.display = "block";
+    paginationContainer.style.display = "flex";
+    level2Promo.style.display = "none";
+
+    const startIndex = (page - 1) * QUESTIONS_PER_PAGE;
+    const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
+
+    // Questions generation
+    questionsContainer.innerHTML = "";
+    for(let i=startIndex; i<endIndex; i++) {
+      const q = questions[i];
+      const userAnswer = userAnswers[i];
+      const questionDiv = document.createElement("div");
+      questionDiv.classList.add("question");
+      questionDiv.id = `question-${q.id}`;
+      questionDiv.setAttribute("tabindex", 0);
+
+      const h3 = document.createElement("h3");
+      h3.textContent = q.text;
+      questionDiv.appendChild(h3);
+
+      q.options.forEach((option, idx) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = `q${q.id}`;
+        input.value = idx;
+        input.disabled = correctionsDone[currentPage - 1];
+        if(userAnswer === idx) input.checked = true;
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(option));
+        questionDiv.appendChild(label);
+      });
+
+      // Coloration réponse après correction
+      if(correctionsDone[currentPage - 1]) {
+        const labels = questionDiv.querySelectorAll("label");
+        labels.forEach((label, idx) => {
+          if(idx === q.correctIndex) {
+            label.style.backgroundColor = "var(--color-success-bg)";
+            label.style.border = `3px solid var(--color-success-border)`;
+            label.style.color = "#155724"; // texte vert foncé
+            if(userAnswer === idx) questionDiv.classList.add("correct");
+          } else if(userAnswer === idx) {
+            label.style.backgroundColor = "var(--color-error-bg)";
+            label.style.border = `3px solid var(--color-error-border)`;
+            label.style.color = "#721c24"; // texte rouge foncé
+            questionDiv.classList.add("incorrect");
+          }
+        });
+      }
+
+      questionsContainer.appendChild(questionDiv);
+    }
+
+    // Section suppression pubs (>1ère page)
+    adsRemoveSection.style.display = (page >= 2) ? "block" : "none";
+
+    updatePagination();
+    updateButtons();
+  }
+
+  // Vérifie si TOUTES les pages sont complètes (réponses données)
+  function allPagesAnswered() {
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+    for(let p=1; p <= totalPages; p++) {
+      if(!allAnsweredOnPage(p)) return false;
+    }
+    return true;
+  }
+
+  function updatePagination() {
+    paginationContainer.innerHTML = "";
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+
+    for(let i=1; i <= totalPages+1; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = (i <= totalPages) ? i : "Fin du Niveau 1";
+      btn.classList.add("page-btn");
+      if(i === currentPage) btn.disabled = true;
+      btn.addEventListener("click", () => {
+        // Bloquer accès fin niveau si pas toutes pages remplies
+        if(i === totalPages + 1 && !allPagesAnswered()) {
+          showMessageModal({
+            type: "alert",
+            title: "Accès refusé",
+            message: "Veuillez compléter toutes les pages avant de consulter la fin du niveau 1."
+          });
+          return;
+        }
+        if(i !== totalPages +1 && !allAnsweredOnPage(currentPage)) {
+          showMessageModal({
+            type: "alert",
+            title: "Page incomplète",
+            message: "Veuillez répondre à toutes les questions sur la page avant de changer de page."
+          });
+          return;
+        }
+        showPage(i);
+      });
+      paginationContainer.appendChild(btn);
+    }
+  }
+
+  function updateButtons() {
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+    prevBtn.disabled = currentPage === 1 || currentPage === totalPages + 1;
+    nextBtn.disabled = currentPage === totalPages || currentPage === totalPages + 1 || !allAnsweredOnPage(currentPage);
+    correctionBtn.disabled = correctionsDone[currentPage - 1] || currentPage === totalPages + 1;
+  }
+
+  function saveAnswers() {
+    if(currentPage === Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE) + 1) return;
+    const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
+    const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
+    for(let i = startIndex; i < endIndex; i++) {
+      const qid = questions[i].id;
+      const radios = document.getElementsByName(`q${qid}`);
+      userAnswers[i] = null;
+      radios.forEach(radio => {
+        if(radio.checked) userAnswers[i] = Number(radio.value);
+      });
+    }
+  }
+
+  function allAnsweredOnPage(page) {
+    if(page === Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE) + 1) return true;
+    const startIndex = (page - 1) * QUESTIONS_PER_PAGE;
+    const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
+    for(let i = startIndex ; i < endIndex; i++) {
+      if(userAnswers[i] === null) return false;
+    }
+    return true;
+  }
+
+  function calculateScores() {
+    let pageScore = 0;
+    let totalScore = 0;
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+    const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
+    const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
+    for(let i = 0 ; i < TOTAL_QUESTIONS; i++) {
+      if(userAnswers[i] === questions[i].correctIndex) {
+        totalScore++;
+        if(i >= startIndex && i < endIndex) pageScore++;
+      }
+    }
+    return { pageScore, totalScore };
+  }
+
+  function makeCorrection() {
+    saveAnswers();
+    if(!allAnsweredOnPage(currentPage)) {
+      showMessageModal({
+        type: "alert",
+        title: "Page incomplète",
+        message: "Veuillez répondre à toutes les questions avant la correction."
+      });
+      return;
+    }
+    correctionsDone[currentPage - 1] = true;
+    showPage(currentPage);
+
+    const { pageScore, totalScore } = calculateScores();
+
+    showMessageModal({
+      type: "alert",
+      title: "Correction",
+      message: `Vous avez obtenu ${pageScore} / ${QUESTIONS_PER_PAGE} sur cette page.`,
+      onConfirm: () => {
+        const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+        if(currentPage === totalPages) {
+          if(totalScore >= PASS_MARK) {
+            showMessageModal({
+              type: "alert",
+              title: "Félicitations!",
+              message: `Bravo ! Vous avez ${totalScore} bonnes réponses sur ${TOTAL_QUESTIONS}.\nVous pouvez passer au Niveau 2.`,
+              onConfirm: () => {
+                showPage(totalPages + 1);
+              }
+            });
+          } else {
+            showMessageModal({
+              type: "alert",
+              title: "À refaire",
+              message: `Vous avez ${totalScore} bonnes réponses sur ${TOTAL_QUESTIONS}.\nVous devez reprendre le Niveau 1.`,
+            });
+          }
+        }
+      }
+    });
+  }
+
+  prevBtn.addEventListener("click", () => {
+    saveAnswers();
+    if(currentPage > 1) showPage(currentPage - 1);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    saveAnswers();
+    if(!allAnsweredOnPage(currentPage)) {
+      showMessageModal({
+        type: "alert",
+        title: "Page incomplète",
+        message: "Veuillez répondre à toutes les questions avant de passer à la page suivante."
+      });
+      return;
+    }
+    const totalPages = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
+    if(currentPage < totalPages) showPage(currentPage + 1);
+  });
+
+  correctionBtn.addEventListener("click", () => {
+    saveAnswers();
+    if(!allAnsweredOnPage(currentPage)) {
+      showMessageModal({
+        type: "alert",
+        title: "Page incomplète",
+        message: "Veuillez répondre à toutes les questions avant la correction."
+      });
+      return;
+    }
+    showMessageModal({
+      type: "confirm",
+      title: "Confirmation",
+      message: "Assurez-vous de vos réponses avant de les valider car après soumission, vous ne pourrez plus les modifier.",
+      confirmText: "Confirmer",
+      cancelText: "Annuler",
+      onConfirm: () => makeCorrection()
+    });
+  });
+
+  // Gestion bouton supprimer pubs (page 2+)
+  removeAdsBtn.addEventListener("click", () => {
+    showMessageModal({
+      type: "confirm",
+      title: "Supprimer les publicités",
+      message: `Souhaitez-vous contacter notre support WhatsApp (${WHATSAPP_NUMBER_DISPLAY}) pour souscrire et supprimer les publicités ?`,
+      confirmText: "Contacter",
+      cancelText: "Annuler",
+      onConfirm: () => {
+        window.open(WHATSAPP_LINK, "_blank");
+      }
+    });
+  });
+
+  // Contact whatsapp promo niveau 2
+  contactWhatsappBtn.addEventListener("click", () => {
+    window.open(WHATSAPP_LINK, "_blank");
+  });
+
+  // Init
+  showPage(1);
+</script>
+
+</body>
+</html>
