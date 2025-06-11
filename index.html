@@ -1,1 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MON CONCOURS.BF - Formation au Concours</title>
+  <style>
+    /* Reset de base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
 
+    body {
+      background: linear-gradient(135deg, #4CAF50 0%, #1B5E20 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Conteneur général */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 0;
+      flex: 1;
+    }
+
+    /* Header / Logo */
+    header {
+      background: rgba(255 255 255 / 0.15);
+      backdrop-filter: blur(10px);
+      padding: 1rem 0;
+      margin-bottom: 3rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    header img {
+      height: 70px;
+      width: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+    }
+    header img:hover {
+      transform: scale(1.07);
+    }
+
+    header h1 {
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Section d'intro */
+    .intro {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .intro h2 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      color: #fff;
+    }
+    .intro p {
+      font-size: 1.15rem;
+      color: #f0fff0dd;
+      max-width: 600px;
+      margin: 0 auto;
+      font-weight: 500;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    }
+
+    /* Sections des concours */
+    .sections {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    /* Carte avec effet ripple */
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: #ffffff15;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgb(0 0 0 / 0.15);
+      width: 320px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: #f9fff9;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+      user-select: none;
+    }
+
+    .card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 16px 30px #4caf5070;
+      background: #388E3C;
+      color: #fff;
+    }
+
+    .card h3 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: #e6ffda;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.7);
+    }
+
+    .card p {
+      font-weight: 500;
+      font-size: 1.1rem;
+      color: #e6ffda;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+    }
+
+    .card button {
+      margin-top: auto;
+      padding: 0.7rem 1.6rem;
+      border: none;
+      border-radius: 35px;
+      background: #A5D6A7;
+      color: #165B17;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.25s ease, color 0.25s ease;
+      box-shadow: 0 4px 10px rgba(165, 214, 167, 0.7);
+      font-size: 1rem;
+      user-select: none;
+    }
+
+    .card button:hover {
+      background: #81C784;
+      color: #0b3f0b;
+    }
+
+    /* Ripple effect styles */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple 600ms linear;
+      background-color: rgba(255, 255, 255, 0.7);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(0 0 0 / 0.35);
+      text-align: center;
+      padding: 1.6rem 0;
+      color: #d0f0d0dd;
+      font-size: 1rem;
+      user-select: none;
+      text-shadow: 0 1px 5px rgba(0,0,0,0.6);
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .sections {
+        flex-direction: column;
+        align-items: center;
+      }
+      .card {
+        width: 90%;
+        max-width: 350px;
+      }
+    }
+  </style>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+  <header>
+    <img src="https://raw.githubusercontent.com/Walyy578/MON-CONCOURS.BF/main/53167931-0987-4e46-adc4-b55f811260fe.webp" alt="Logo MON CONCOURS.BF" />
+    <h1>MON CONCOURS.BF</h1>
+  </header>
+
+  <div class="container">
+    <section class="intro">
+      <h2>Préparez vos concours avec succès</h2>
+      <p>
+        Découvrez des formations complètes et adaptées pour réussir vos concours directs et paramilitaires. Rejoignez une communauté dynamique et prenez une longueur d'avance dès aujourd'hui !
+      </p>
+    </section>
+
+    <section class="sections" aria-label="types de concours">
+      
+      <!-- Concours direct -->
+      <article class="card" tabindex="0" role="button" aria-pressed="false" aria-label="Concours direct" data-url="direct.html">
+        <h3>Concours Direct</h3>
+        <p>Formation spécialisée pour les concours administratifs, universitaires, et autres concours d’entrée directe. Accédez à tous les modules et entraînements personnalisés.</p>
+        <button type="button" data-url="direct.html">Découvrir</button>
+      </article>
+
+      <!-- Concours paramilitaire -->
+      <article class="card" tabindex="0" role="button" aria-pressed="false" aria-label="Concours paramilitaire" data-url="para.html">
+        <h3>Concours Paramilitaire</h3>
+        <p>Préparez-vous aux concours paramilitaires avec des cours théoriques, pratiques et des tests adaptés aux exigences des différentes forces.</p>
+        <button type="button" data-url="para.html">Découvrir</button>
+      </article>
+
+    </section>
+  </div>
+
+  <footer>
+    Développé par Ibrahim Congo - WhatsApp : +226 63481280
+  </footer>
+
+  <script>
+    // Fonction pour créer l'effet ripple
+    function rippleEffect(event) {
+      const card = event.currentTarget;
+      const circle = document.createElement("span");
+      circle.classList.add("ripple");
+
+      // Taille du cercle (le plus grand côté)
+      const diameter = Math.max(card.clientWidth, card.clientHeight);
+      circle.style.width = circle.style.height = diameter + "px";
+
+      // Position du clic relatif à la carte
+      const rect = card.getBoundingClientRect();
+      const x = event.clientX - rect.left - diameter / 2;
+      const y = event.clientY - rect.top - diameter / 2;
+      circle.style.left = x + "px";
+      circle.style.top = y + "px";
+
+      card.appendChild(circle);
+
+      // Supprimer la ripple après animation
+      circle.addEventListener("animationend", () => {
+        circle.remove();
+      });
+    }
+
+    // Gestionnaire de click sur les cartes et boutons
+    function handleClick(event) {
+      // Ne pas propager le clic sur le bouton vers la carte pour éviter double redirection
+      if(event.target.tagName.toLowerCase() === "button") {
+        event.stopPropagation();
+      }
+
+      const card = event.currentTarget;
+      rippleEffect(event);
+
+      // Redirection après un court délai pour laisser l'animation se jouer
+      const url = event.target.dataset.url || card.dataset.url;
+      setTimeout(() => {
+        window.location.href = url;
+      }, 350); // 350ms délai (moins que la durée animation ripple 600ms pour fluidité)
+    }
+
+    // Ajout des événements au chargement du DOM
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".card");
+      cards.forEach(card => {
+        card.addEventListener("click", handleClick);
+        const btn = card.querySelector("button");
+        if(btn) {
+          btn.addEventListener("click", handleClick);
+        }
+      });
+    });
+  </script>
+</body>
+    </html>
